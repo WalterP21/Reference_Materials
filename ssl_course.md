@@ -1,0 +1,220 @@
+## Notes From SSL/TLS Course
+
+**Generate CSR with openssl for nginx:**
+```openssl req -new -newkey rsa:4096 -nodes -keyout wallytlscourse.com.key -out server.csr```
+the -nodes option stores the certificate on the web server unencrypted
+
+**Generate Self Signed certificate**
+Can be done in one command per: https://stackoverflow.com/questions/10175812/how-to-generate-a-self-signed-ssl-certificate-using-openssl
+```openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 365```
+This will then prompt you to enter all the other info required for CSR (Subject Name info)
+Once created you will need to add the key pasphrase to nginx config: `~/etc/nginx/sites-available/wallytlscourse.com`
+Add this line: `ssl_password_file /etc/ssl/passphrase.pass`
+Then create file in indicated directory with the passphrase as the contents
+
+
+**CSR - Certificate Signing Request**
+Before creating CSR you need a public/private key pair - this tutorial uses RSA for that
+Will need to include:
+```
+Subject Name:
+
+Country
+
+State
+
+Organization
+
+Organizational Unit
+
+Common Name - Choose CN according to main domain where the certificate will be used
+
+Public Key
+```
+SSL Certs for nginx stored here: `cd /etc/ssl`
+
+These commands are pulled from the following setup doc: https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-22-04
+Check to make sure nginx is running: `systemctl status nginx`
+
+* Server blocks allow you to host several websites on a single server
+
+* Reverse Proxy - Server located between client browser and web server. It hides the actual IP of the address of the webserver by establishing a TCP session with both the browser and the server, so the browser see's the website IP as the reverse proxy.
+ + Cloudflare is a worldwide cloud reverse proxy with caching, DDoS mitigation and more
+
+* SSH into droplet from terminal: `ssh root@<ip_of_droplet>`
+
+* Navigate into the directory that holds certificates in the droplet, then see the contents with: `cat cert.pem`
+
+**Analyze cert with:**
+```openssl x509 -in cert.pem -text -noout```
+or got to: https://www.sslshopper.com/certificate-decoder.html
+or https://www.ssllabs.com/ssltest/
+
+**See renewal info:**
+```
+cd ~/etc/cron.d
+cat certbot
+```
+
+**Popular hosting services:**
+* AWS (EC2): Can be on-demand or spot instances (cheaper, not guaranteed).
+* Google Cloud
+* Microsoft Azure
+* Digital Ocean
+
+**Two main hosting options: Virtual Private Server (VPS) and Dedicated Server**
+* VPS (more popular) - located on a physical machine along with other VPS's. Often will be Oversubscribed (makes it cheaper)
+* Dedicated server - can be a physical server or a VPS. Difference is no over subscription i.e. will always be able to access all resources.
+
+**Nameservers**
+When you connect to any website, your computer sends a DNS request. DNS Servers are responsible for resolving DNS names to IP addresses. A Nameserver is the server that actually resolves the dns name to an IP address
+
+**Delivering encryption key using Diffie Hellman key exchange**
+* Diffie Hellman (ECDHE) - Gives us a way to generate the symmetric key for HTTPS client-to-server traffic without using the RSA key pair of the server.
+* Both sides generate key, but nobody can generate this same key
+* This is done by using one way functions (example - modulus is one way)
+```
+Lets say there are 2 sides - alice and Bob
+Alice generates 3 numbers: a, g, p
+Bob generates 1 number: b
+
+a and b considered private keys, they are not transferred over network
+g and p are public keys so they are shared, along with A
+A = g ^ a % p
+
+When 3 values are sent to bob, he generates B and sends back to alice
+B = g ^ b % p
+
+Both sides should now be able to generate K using there private keys
+K = B ^ a % p = A ^ b % p
+```
+
+**Encryption key generation by the web browser**
+* Delivering symmetric key for TLS Encryption without Diffie Hellman algorithm
+ + Browser sends list of supported Cipher suites to server and server picks one
+ + Server sends certificate to browser and browser verifies
+ + Browser generates random key and encrypts it using the public key included in the servers certificate
+ + Encrypted key is sent to server that has the private key to decrypt it
+ + Drawback - same RSA key pair is used for certificate verification and encryption of symmetric TLS key. For this reason this key delivery system should generally be avoided
+
+**How a TLS session is established:**
+Negotiate Cipher Suite - Web browser sends list of supported cipher suites to the web server and server choses one
+How the symmetric key for data will be generated; what algorithm will be used for encryption
+Web Server sends its Certificate to the web browser
+If there are any intermediate CAs, the web server sends those as-well
+Server certificate is validated
+Signature verified; validity period verified
+Generate symmetric key for data encryption
+Can be generated in a few ways depending on cipher suite. Ex: generated by browser, encrypted using public key of server and sent to server (who has private key and can decrypt)
+Encrypted data can now be sent/received
+
+* In HTTPS, symmetric encryption is used for data transfer
+
+**Why RSA is not used for data encryption in HTTPS**
+RSA encryption alone cannot be used for HTTPS traffic because the encryption in uni-directional - i.e. only the server has the private key and thus the ability to decrypt data. Encryption needs to be bi-directional so the browser also has the ability to decrypt data sent from the server
+
+* SSL came first and all versions are now deprecated. TLS 1.3 is the current recommended protocol but TLS 1.2 is still actively used as-well
+
+**Introduction to the SSL and TLS**
+Certificates are used for establishing trust between web browser and web server
+Secure Socket Layers (SSL)
+Transport Layer Security (TLS)
+Certificates do not depend on a specific protocol and could be used for both (TLS and SSL)
+
+**Certificate Domain Scopes**
+* Single domain scopes - certificate can only be used at 1 domain. CN == domain name
+www.instagram.com
+* Wildcard - valid for domain itself and all sub domains
+.google.com.  -> valid for stuff like translate.google.com
+* multidomain - valid for multiple domains and subdomains
+.facebook.com, *.fb.com
+
+**Verifying chain of certificates**
+How is a certificate verified? When you open up a page served via HTTPS the web server sends its own certificate and certificate of all the intermediate CAs:
+* Looks at End user certificate first - verifies date is between validity interval.  Looks at the issuer info of the cert next, and tries to find another cert where the owner info matches (AKA finds the intermediate CA that issued the the end user cert). Then take the public key from that cert and verify the signature on the end user cert - if so trust between the two certs is established
+* The process is then repeated up the chain until the issuer info matches one of the root CAs from the OS. We then verify the signature on the intermediate CA using the public key from the root CA and thus have established a chain of trust from the root down to the end user cert
+
+**How is the chain of trust built?**
+* Root CA trust comes built into the OS and is self signed (signed by the root CA itself - SHA hash of certificate was encrypted using its own private key)
+ + This also means the owner info and the issuer info are the same
+* Intermediate CA - signature of this is made using the private key of the root CA. Owner info and Issuer info are different at this level (issuer info is from root CA)
+* End user CA - Signature of this is made using the private key of the intermediate CA. This occurs when the certificate that was created on the end user machine sends a certificate signing request (CSR) to the intermediate CA
+
+**Root CA and root certificates in the OS**
+How does the browser know to trust the root CA? Each OS ships with a list of trusted CAs. You can see these by going into the Keychain Access app and opening the system roots. Intermediate CAs are not included in this list
+
+**Certificate Info:**
+```
+CN - Common Name
+OU - Organizational unit
+O - Organization
+L - Locality
+ST - State/Province
+C - Country or Region
+```
+
+**Using OpenSSL for RSA keys generation**
+generate a private key: `openssl genrsa`
+generate encrypted private key: `openssl genrsa -aes256`
+generate encrypted private key and send to file: `openssl genrsa -aes256 -out private.pem`
+* pem: extension for file containing certificates
+* the public key is also encoded in the private key
+Extract the public key to file from private key: `openssl rsa -in private.pem -outform PEM -pubout -out public.pem`
+Generate key of different length: `openssl genrsa 4096`
+
+**Certificates contain:**
+* Information about owner - company name, address, website etc.
+* Information about issuer - CA or intermediate CA
+* Signature - Encrypted Hash (with private key) of certificate
+
+* If certificate is signed by CA and we trust the CA then we trust the owner of the CA too
+* A self signed certificate is issued and signed by the owner
+* Public Key - belongs to the owner of the certificate, never the issuer
+
+
+**Public Key Infrastructure (PKI)**
+* Certificate Authority (CA) - signs certificates or delegates trust to other entities (or Intermediate CAs)
+* Intermediate CA - Signature of certificates issued by other entities
+* Certificate - a set of data containing, most importantly, the public key of the owner of the certificate. So every certificate in a PKI will contain the public key of the owner
+
+**RSA Overview**
+* RSA - public key crypto-system. Keys between 1024 and 4096 bits, with 2048 being the most common.
+
+**Signing data using assymmetric keys**
+* Signing data using asymmetric keys - Owner converts data  into hash than encrypts hash using private key. Data and encrypted hash are sent to receiver, who decrypts the encrypted hash with the public key and compares to Data (once hashed by receiver) to verify match
+
+**Encryption utilizing asymmetric keys** - Owner holds both private and public key. Someone encrypts data with public key and sends to owner of key pair; since they are the only one with the private key they are the only ones who can decrypt the data
+
+**Asymmetric keys overview**
+* Asymmetric Encryption - utilizes a private and public key, usually both of the same length. Use cases:
+* Public key is used for encryption of data, and only the private key can decrypt said data.
+* Owner of private key signs data (creates hash) utilizing said private key, anyone with public key can verify this signature
+
+**Hashing Algorithms:**
+* MD5 - creates fixed length hash (128 bit)
+* SHA
+* SHA-1(160 bit)
+* SHA-256(256 bit)
+* SHA-512(512 bit)
+* HMAC - can be used standalone, but usually used in conjunction with MD5 or SHA. Adds a secret key into hashing process
+
+**Hashing Overview**
+* How hashes can be used for data integrity checks - Data is encrypted by sender with hash function, then data and hash is sent to receiver. Receiver uses same hash function to create a hash from the sent data, then compares the hash created to what was sent by the sender. If they match that means the data was not changed in transport over network. Usually the data is also encrypted before hash function is applied by sender in that way keeping data secure.
+* If the hashing function also utilizes a key than you can additional authenticate the sender
+
+**Hashing Overview**
+* Hashing - Data of variable length is converted via a one way hash function into a fixed length hash (128bit, 160bit etc.). Generally speaking no key is required for the hashing function, although there are some more advanced functions that utilize keys
+* One way implies that you cannot retrieve data from a hash
+
+**Symmetric key encryption algorithms:**
+* DES (56 bit)
+* 3DES (DES 3 times)
+* AES - Advanced Encryption System - utilize keys of different length (128 bit, 256 bit) <- only one thats not obsolete
+
+**Symmetric Key Encryption**
+* In symmetric encryption, the same key is used to both encrypt and decrypt the data
+
+**Difference between HTTP and HTTPS**
+* The default port for HTTPS traffic is 443; for HTTP is 80 (TCP)
+
+* Every certificate has fingerprints and they are used for integrity checks on the certificate
