@@ -1,0 +1,114 @@
+# Make changes to .zshrc
+code .zshrc
+#SAVE_FILE
+source .zshrc
+
+#Creating a New Repo to push local commits to
+#1. Create a new repo on github with the same name as your local
+#2. in local repo...
+git init -b main
+git add .
+git commit -m "First Commit"
+git remote add origin [ADDRESS_FROM_GITHUB]
+#Optional: Confirm remote address added
+git remote -v
+#3. (if required)
+gh auth login
+? What account do you want to log into? GitHub.com
+? What is your preferred protocol for Git operations? HTTPS
+? Authenticate Git with your GitHub credentials? Yes
+? How would you like to authenticate GitHub CLI? Login with a web browser
+#4. 
+git push -u origin main
+
+#Run Ruby file from command line
+#From Project Repo...
+ruby [NAME_OF_FILE].rb
+
+#To get out of window ending in (END) type 'q'
+
+#Setting up Ruby on a new computer
+#1. Download homberew from website and verify that installs xcode
+➜  ~ xcode-select -p
+/Library/Developer/CommandLineTools
+#2. Download Node.js (or check if installed)
+node -v
+npm -v
+From Website: https://nodejs.org/en/
+#3. Install Yarn
+brew install yarn
+yarn --version
+#4. Install RVM: https://rvm.io/rvm/install
+Possible - install gpg2 via homebrew: brew install gpg2 
+If running the gpg2 command gives you some error, try the 'Alternitives' command on this page: https://rvm.io/rvm/security
+run this command: curl -sSL https://get.rvm.io | bash -s stable
+Close and re-open terminal
+#5. Install Ruby
+rvm list known - lists all available rubbies out there
+rvm install ruby --latest - installs latest stable version of ruby
+rvm use ruby --latest - uses the latest version of ruby installed
+ruby - v - Confirms which version of Ruby is being used by the system
+#6. Install and configure git if not already installed
+git --version
+git config --list
+git config --global user.name "Walter Porzel"
+git config --global user.email walter.porzel@thoughtworks.com
+#7. Install Rails 6 (or whatever version)
+gem install bundler
+gem install webpacker
+gem list rails - initially will show none
+gem install rails
+rails -v
+#8. Make new rails app! Example:
+
+#To get to the top of the console
+CTRL + L
+
+#Installing and switching to another version of rails
+go to: https://guides.rubyonrails.org/ and select version you want
+#Install it
+gem install rails -v 6.0.4.4
+#confirm installation
+gem list rails
+#Use it to make old version of app
+rails _6.0.4.4_ new test_app_6
+
+#Install and use a different version of ruby
+#List what you currently have
+rvm list rubies
+#Install needed version
+rvm install ruby-2.6.3
+#Check current version
+ruby -v
+#To change the default for your system
+rvm --default use 2.6.3
+#Or just use a different version
+rvm use 2.6.3
+rvm use default#switches back to system default
+
+#revert to old commit branch and make updates while there
+git log
+git checkout -b old-state [commit id]
+git checkout -b old-state-styled 3300be837f9591066e918cd700807018d7f1164c
+
+#When cloning a rails repo...
+remove gemfile.lock
+#run: bundle install
+rails s
+#If you recieve 'error couldn't find integrity file'
+go into config/webpacker.yml and change 'check_yarn_integrity' to false
+if on startup of rails 6 app you recieve 'Sprockets file not found Exception'
+bundle exec rails webpacker:install
+
+#To create a specific gemset within a ruby version to avoid future conflicts
+rvm use 2.7.2@rails-api --create
+#list gemsets available in version
+rvm gemset list
+
+#-T option to remove default tests, api flag because we will only be building an api
+rails new api -T --api
+
+#run search in file system for all matching text
+grep '[TEXT]' **/*.[FILE TYPE EXTENSION]
+#case insensitive
+grep '[TEXT]' -i **/*.[FILE TYPE EXTENSION]

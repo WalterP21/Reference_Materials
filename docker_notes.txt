@@ -1,0 +1,82 @@
+//DOCKER
+#Check version
+docker version
+
+#check for local image, if not found reachs out to docker hub, pulls image and runs code
+docker run hello-world
+
+#override default startup command
+docker run <image_name> command!
+EX. docker run busybox echo hi there
+
+#list all running containers
+docker ps 
+
+#list all containers that have been run on machine
+docker ps --all
+
+#explaining docker run
+docker run =  docker create + docker start 
+docker create hello-world
+docker start -a <image_hash_retruned_from_previous_command>#-a makes command watch for output from container and prints it to terminal
+
+#restart a stopped/exited container
+docker start <container_id>
+
+#remove stoped containers (and build cache)
+docker system prune
+
+#list all activity from container
+docker logs <container_id>
+
+#stop a running container
+docker stop <container_id>
+#hard-stop: shuts it down immediatly
+docker kill <container_id>
+
+#run redis server
+docker run redis
+
+#execute command in container
+docker exec -it <container_id> <command>
+
+#open shell in running container
+docker exec -it <container_id> sh
+#run contiainer with shell
+docker run -it <contiainer_id> sh
+
+#Creates image if in directory with dockerfile
+docker build .
+#tag image when building
+docker build -t <image_tag> .
+#usual image tag format
+your_docker_id + / + repo_or_project_name + : + version
+ex. walterp/redis:latest
+#Running tagged image - don't need to add version; automatically picks latest
+docker run walterp/redis
+
+#custom port forwarding - for incomming requests
+docker run -p <route_incomming_localhost_requests_to...>:<container_port> <image_id>
+#EX
+docker run -p 8080:8080 walterp/simpleweb
+
+##Docker Compose - from directory with compose file
+#run already existing image
+docker-compose up
+#build and run image (use after code change)
+docker-compose up --build
+#launch containers in the background
+docker-compose up -d 
+#stop all running containers
+docker-compose down
+#get status of all running containers
+docker-compose ps
+#run custom named compose file
+docker-compose -f docker-compose-dev.yml up
+
+#run dockerfile with custom name
+docker build -f <dockerfile_name> .
+EX: docker build -f Dockerfile.dev .
+
+#setup container and run with volumes (container will now auto update with code changes without needing to be restarted)
+docker run -p 3000:3000 -v /app/node_modules -v $(pwd):/app <image_id>

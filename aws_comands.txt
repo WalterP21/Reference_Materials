@@ -1,0 +1,9 @@
+# confirm installation
+aws --version
+
+#configure
+aws configure #Enter keys generated for user from console - NOT ROOT USER 
+
+#list all users
+aws iam list users
+

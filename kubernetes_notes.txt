@@ -1,0 +1,43 @@
+Kubernetes - System for running many different contiainers over multiple different machines.
+- used when you need to run many different containers with different images 
+- Kubernetes cluster = Master (controls what each node does) + nodes (virtual machine or physical computer used to run containers)
+- in Dev environment you use minikube to work with Kubernetes, in production use managed solutions (EKS, GKE etc.)
+- minikube creates the virtual machine or node that runs containers, kubectl allows you to interact with the containers in the node
+- Kubectl - CLI for interacting with our master
+- Kubernetes expects images to already exist. need seperate config files for objects (usually containers) and networking (think ports)
+- config files used to create objects, (ex. StatefulSet, ReplicaController, Pod, Service)
+- Objects serve different purposes - running a container, monitoring a container, setting up networking etc. 
+- Different apiVersion defines a different set of 'objects' we can use
+- Node used to run some number of different objects. Containers will always be deployed in pods (the smallest thing that can be deployed). The containers in the same pod should all have a similar purpose
+- Pod - run one or more closely related containers
+- Services - Set up networking in a Kubernetes Cluster (ClusterIP, NodePort, LoadBalancer, Ingress)
+- Every single kubernetes node we make has a kube-proxy. The kube proxy is the single window to the outside world
+- label-selector system - label set in metadata of pod configuration file, which links to the selector in the spec section of the service config file
+- the kube-apiserver in the master is responsible for monitoring all the nodes in your cluster and making sure they are doing the right thing
+- Imperative Deployments - do exactly these steps to arrive at this container setup; 
+- Declarative Deployments - Our container setup should look like this, make it happen
+- Deployment - Maintains a set of identical pods, ensuring that they have the correct config and the right number exists
+
+#check if kubectl is installed
+kubectl version
+
+#See cluster info 
+kubectl cluster-info
+
+#Feed configuration file into kubernetes cluster
+kubectl apply -f <filename>
+
+#Print status of all running pods
+kubectl get pods
+#more info
+kubectl get pods -o wide
+
+#Get detailed info about an object
+kubectl describe <object_type/kind> <object name>
+ex. kubectl describe Pod client-pod
+
+#remove an object
+kubectl delete -f <config file>
+
+#Get status of all Deployments
+kubectl get deployments
