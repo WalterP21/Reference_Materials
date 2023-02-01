@@ -7,3 +7,6 @@ aws configure #Enter keys generated for user from console - NOT ROOT USER
 #list all users
 aws iam list users
 
+#SSH into EC2 instance
+chmod 0400 [key location/name]
+ssh -i [key location/name] ec2-user@[public ipV4 address]

@@ -79,4 +79,4 @@ docker build -f <dockerfile_name> .
 EX: docker build -f Dockerfile.dev .
 
 #setup container and run with volumes (container will now auto update with code changes without needing to be restarted)
-docker run -p 3000:3000 -v /app/node_modules -v $(pwd):/app <image_id>
+docker run -p 3000:3000 -v /app/node_modules -v $(pwd):/app <image_id>  

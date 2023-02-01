@@ -17,6 +17,9 @@ Kubernetes - System for running many different contiainers over multiple differe
 - Imperative Deployments - do exactly these steps to arrive at this container setup; 
 - Declarative Deployments - Our container setup should look like this, make it happen
 - Deployment - Maintains a set of identical pods, ensuring that they have the correct config and the right number exists
+- Every single pod when created gets an IP (internal to machine) assigned to it. Since pods are spinning up and being deleted frequently with deployments, a service is needed to always ensure a constant
+  IP address for the outside world to access
+- There is not an easy way to update all pods in a deployment if a new version of an image is pushed.
 
 #check if kubectl is installed
 kubectl version
@@ -41,3 +44,6 @@ kubectl delete -f <config file>
 
 #Get status of all Deployments
 kubectl get deployments
+
+#Imperative command to update image version
+kubectl set image <object_type>/<object_name> <container_name> = <new_image_to_use>
