@@ -26,12 +26,12 @@
 
 **Endpoints writ large**
 * Authorization endpoint (/authorize GET)
- + Paramaters: state, scope, response_type(auth_code or token-implcit), client_id, redirect_uri(result of auth call payload sent to, usually on client)
+  + Paramaters: state, scope, response_type(auth_code or token-implcit), client_id, redirect_uri(result of auth call payload sent to, usually on client)
 * Token endpoint(/token POST with auth clientid:clientSecret)
- + Parameters: grant_type, code, client_id, redirect_uri
- + Output: Access Token and Refresh Token (for Auth code grant, client credentials grant and recource owner password credentials grant)
+  + Parameters: grant_type, code, client_id, redirect_uri
+  + Output: Access Token and Refresh Token (for Auth code grant, client credentials grant and recource owner password credentials grant)
 * Redirect endpoint - GET for client
- + Parameters: state, scope, code 
+  + Parameters: state, scope, code 
 * Resource endpoint
 
 **Tokens and Credentials**
@@ -41,19 +41,19 @@
 
 ### OAuth Flows
 * Example
- + Email scheduling app contacts OAuth server with type of recources it needs access to (ex. emails), and some meta info (state)
- + OAuth server (API) then prompts resource owner to make request on the auth endpoint. This isn't usually handled directly by the OAuth server, rather it redirects initial request to some sort of login service which provides login UI to resource owner
- + Resource owner then authenticates (usually via username/password) which makes it back to OAuth server (usually throgh login service). If successful Oauth server then generates an authorization code (random numbers/letters usually), which is sent back to the email scheduling app
- + Email app then sends request for resource to resource server with the auth code in the header
- + Resource server then sends auth code to OAuth server alond with details about what resource is being requested. OAuth server confirms that auth code is applicable for requested resources and if so sends back ok to Resource server.
- + Resource server then gets the email from its DB and sends back to scheduling app
+  + Email scheduling app contacts OAuth server with type of recources it needs access to (ex. emails), and some meta info (state)
+  + OAuth server (API) then prompts resource owner to make request on the auth endpoint. This isn't usually handled directly by the OAuth server, rather it redirects initial request to some sort of login service which provides login UI to resource owner
+  + Resource owner then authenticates (usually via username/password) which makes it back to OAuth server (usually throgh login service). If successful Oauth server then generates an authorization code (random numbers/letters usually), which is sent back to the email scheduling app
+  + Email app then sends request for resource to resource server with the auth code in the header
+  + Resource server then sends auth code to OAuth server alond with details about what resource is being requested. OAuth server confirms that auth code is applicable for requested resources and if so sends back ok to Resource server.
+  + Resource server then gets the email from its DB and sends back to scheduling app
 
 * Overview of flows
- + For each OAuth flow there is an OAuth grant type
- + **Authorization Code Flow (Authorization Code Grant)** - also known as 3 legged OAuth. Default flow and most secure. Prerequisite is client has ability to store client id and secret. Other flows are simplifications of this flow
- + **Implicit Flow (Implicit Grant Type)** - used when client cannot securly store tokens, ids or secrets; generaly the case when the client is purley client side javascript. Drawback is not very convienient because you can't easily refresh an access token. 
- + **Client Credentials Flow (Client Credentials Grant)** - Also known as 2 legged OAuth. Applied when client is also resource owner
- + **Resource Owner Password Credentials Flow (Resource Owner Password Credentials Grant)** - used when resource owner can entrust password to the client.
+  + For each OAuth flow there is an OAuth grant type
+  + **Authorization Code Flow (Authorization Code Grant)** - also known as 3 legged OAuth. Default flow and most secure. Prerequisite is client has ability to store client id and secret. Other flows are simplifications of this flow
+  + **Implicit Flow (Implicit Grant Type)** - used when client cannot securly store tokens, ids or secrets; generaly the case when the client is purley client side javascript. Drawback is not very convienient because you can't easily refresh an access token. 
+  + **Client Credentials Flow (Client Credentials Grant)** - Also known as 2 legged OAuth. Applied when client is also resource owner
+  + **Resource Owner Password Credentials Flow (Resource Owner Password Credentials Grant)** - used when resource owner can entrust password to the client.
 
 #### Authorization Code Flow
 ![Auth Code Flow](./Images/auth_code_flow.png)
