@@ -12,9 +12,9 @@
 ### OAuth Components
 **Actors**
 * OAuth Provider - consists of 3 components.
- + Authentication component - provides login and identity provider
- + Consent server - requests the authenticated users consent
- + Token Management infrastructure (DB)
+  + Authentication component - provides login and identity provider
+  + Consent server - requests the authenticated users consent
+  + Token Management infrastructure (DB)
 * Resource Provider - Makes a protected resource available via http
 * Resource Owner - Whoever the authenticated user is. Delegates access rights to 3rd party client
 * Client - the party a token is provisioned to. Identified via ClientID and ClientSecret
