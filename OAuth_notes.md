@@ -105,6 +105,17 @@
 * You receieve an access token directly from the /auth endpoint
 * Short validity time of access token and reduced security are the drawbacks of this flow
 ---
+**Client Credentials Grant Flow**
+* Only uses the /token endpoint of the oauth server
+* Does not require the resource owner to authenticate themselves
+* Client == Resource Owner
+* Used when client can offer secure storage for tokens and clientid and clientsecret
+---
+**Resource Owner Password Credentials Grant Flow**
+* Resource owner is willing to share credentials (username/password) with client
+* Can be used if client and resource owner are part of the same organization
+* Client will reach out initial with username and password to token endpoint, then will recieve that token and use it to access the resource server
+
 
 
 
