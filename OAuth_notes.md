@@ -60,33 +60,33 @@
 * OAuth server authenticates user via username and password. Oauth server authenticates client by client id and client secret. Client authenticates Oauth server by certificate and URL.
 * This flow is used when the client can store id, secret, tokens (aka a server side web app)
 ##### Authorization Endpoint
-1. Get the Authorization Code - client requests authorization code from oauth server /auth endpoint
-  1. Kicked off by some sort of request from Resource Owner to client
-  2. Client reaches out to /auth endpoint of OAuth server to get code
-    1. Also will include type of access requested from code (scopes)
-    2. Kind of response requested
-    3. Client_id
-    4. Redirect URI - Where Oauth server sends results back to (has to match up to client_id)
-    5. State - used to map responses on client side
-  3. OAuth server redirects or sends login page to resource owner
-  4. Resource owner sends login info back to OAuth server
-  5. OAuth server sends request back to resource owner with details about the type of information/access requested
-  6. Resource owner agrees, sends constent back to OAuth server
-  7. Oauth server sends http redirect to client
-    1. Techinically it sends redirect to browser of resource owner which redirects to the clinet
-    2. includes state from original client request
-  8. Grant is now created, but note that no token is generated, so the client still will be unable to contact the resource server
+1. Get the Authorization Code - client requests authorization code from oauth server /auth endpoint 
+    1. Kicked off by some sort of request from Resource Owner to client
+    2. Client reaches out to /auth endpoint of OAuth server to get code
+      1. Also will include type of access requested from code (scopes)
+      2. Kind of response requested
+      3. Client_id
+      4. Redirect URI - Where Oauth server sends results back to (has to match up to client_id)
+      5. State - used to map responses on client side
+    3. OAuth server redirects or sends login page to resource owner
+    4. Resource owner sends login info back to OAuth server
+    5. OAuth server sends request back to resource owner with details about the type of information/access requested
+    6. Resource owner agrees, sends constent back to OAuth server
+    7. Oauth server sends http redirect to client
+      1. Techinically it sends redirect to browser of resource owner which redirects to the clinet
+      2. includes state from original client request
+    8. Grant is now created, but note that no token is generated, so the client still will be unable to contact the resource server
 2. Get the token - client uses auth code from step one to reach out to /token endpoint to get token
-  1. Client reaches out to Oauth server (POST) with grant type(authorization code), auth_code (recieved from auth endpoint in previous step), and client credentials (client_id and client_secret base64 encoded)
-  2. Once this is all verified, OAuth server sends back to client JSON containing:
-    1. Access Token
-    2. Token type (bearer)
-    3. Refresh Token
-    4. Expires in (access token NOT refresh token)
+    1. Client reaches out to Oauth server (POST) with grant type(authorization code), auth_code (recieved from auth endpoint in previous step), and client credentials (client_id and client_secret base64 encoded)
+    2. Once this is all verified, OAuth server sends back to client JSON containing:
+      1. Access Token
+      2. Token type (bearer)
+      3. Refresh Token
+      4. Expires in (access token NOT refresh token)
 3. Use Token to access a resource - /resource endpoint on resource server
-  1. Client reaches out to resource server for resource with access token from last step
-  2. Resource server sends token to OAuth server which verifies token is still valid and valid for the resources requested by the client
-  3. If it is OAuth server sends ok back to resource server, which now returns resource to client
+    1. Client reaches out to resource server for resource with access token from last step
+    2. Resource server sends token to OAuth server which verifies token is still valid and valid for the resources requested by the client
+    3. If it is OAuth server sends ok back to resource server, which now returns resource to client
 
 **Refresh Token Flow** - used when access token is expired
 1. 
