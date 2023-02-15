@@ -77,7 +77,10 @@
         2. includes state from original client request
     8. Grant is now created, but note that no token is generated, so the client still will be unable to contact the resource server
 2. Get the token - client uses auth code from step one to reach out to /token endpoint to get token
-    1. Client reaches out to Oauth server (POST) with grant type(authorization code), auth_code (recieved from auth endpoint in previous step), and client credentials (client_id and client_secret base64 encoded)
+    1. Client reaches out to Oauth server (POST) with:
+        1. grant type(authorization code)
+        2. auth_code (recieved from auth endpoint in previous step)
+        3. client credentials (client_id and client_secret base64 encoded)
     2. Once this is all verified, OAuth server sends back to client JSON containing:
         1. Access Token
         2. Token type (bearer)
@@ -87,8 +90,21 @@
     1. Client reaches out to resource server for resource with access token from last step
     2. Resource server sends token to OAuth server which verifies token is still valid and valid for the resources requested by the client
     3. If it is OAuth server sends ok back to resource server, which now returns resource to client
-
-**Refresh Token Flow** - used when access token is expired
-1. 
-
+---
+**Refresh Token Flow** - used when access token is expired but refresh token is not    
+1. Client reaches out to /token endpoint via a POST request with:
+    1. grant_type (refresh token)
+    2. refresh_token
+    3. client credentials (client_id and client_secret base64 encoded)
+2. /token endpoint responds with a new access_token and a refresh_token
+3. Step 3 from the preceeding flow can now be followed for the client to access resources once again    
 * Key actors: Resource Owner, Resource Server, Client (mobile or cloud), OAuth server
+---
+**Implicit Grant Flow**
+* Simplification of the auth code flow. Doesn't utilize the token endpoint
+* You receieve an access token directly from the /auth endpoint
+* Short validity time of access token and reduced security are the drawbacks of this flow
+---
+
+
+
