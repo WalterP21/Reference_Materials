@@ -112,3 +112,174 @@ rails new api -T --api
 grep '[TEXT]' **/*.[FILE TYPE EXTENSION]
 #case insensitive
 grep '[TEXT]' -i **/*.[FILE TYPE EXTENSION]
+
+# See git files changes since last commit
+git diff --name-only HEAD HEAD~1
+git log --stat
+
+# Rebasing a branch/squashing commits
+git log
+# pick oldest commit BEFORE the last one you want to combine
+git rebase --interactive [commit-hash]
+# s next to all commits to be squashed, pick next to earliest (top of list) commit
+# save :wq
+# keep the combined message or rename the commit to whatever you want
+# save :wq
+# You will need to force push to GitHub once rebase is successful
+git push --force origin [branch_name]
+# discard rebase before completion
+git rebase --abort
+# Ammending a commit if you set it to edit during rebase
+git commit --ament --authy "[GHUsername] <[GHemail]>" -m "some message
+
+#rebasing a branch off main - from branch
+#Make backup
+git checkout -b Branch2_backup
+# rebase and push
+git fetch origin
+git rebase origin/main
+git push --force origin Branch2 
+
+#Cherry Picking commits
+# Make copy of branch
+git checkout -b Branch_copy
+# Squash all commits into single and copy hash or list commits hashes from oldest to newest
+git fetch origin
+git checkout main
+git pull (if nessecery)
+git checkout -b New_branch
+git cherry-pick [commit hash or commit hash list]
+# resole any conflicts
+# verify changes/ no more conflicts by openeing PR
+
+# Importing a file from another branch
+git fetch origin
+git checkout [OTHER_BRANCH]
+git checkout [YOUR_BRANCH]
+git checkout [OTHER_BRANCH] /path/to/file
+
+#Comment multiple lines in VIM
+CTRL+V <use arrow keys for all lines> SHIFT+I # ESC
+#after hitting escape you will see multiple lines commented out at once
+
+#Global search of a repo
+grep 'Search term' -i **/*.rb (or whatever file tipe you wanna search)
+
+# See a fill commit Description
+git log --format=%B <commit hash>
+
+# Reset local to exactly match remote branch
+git reset --hard origin/<remote_name>
+
+#See details of a certificate file
+openssl x509 -in <certificate file>.pem -text
+
+#Streaming kubernetes logs - from kubernetes namespace/context
+stern <repo> --include="<search_term>"
+stern externaauth --include="scim
+
+#Streaming a rails development log
+tail -f log/development.log | grep "search term" (if you want to limit results)
+
+#Manually modifying request headers
+# Install Burp Suite Community Eddition
+# Open -> 'temporary project' -> 'Use Burp defaults'
+# Navigate to the 'Proxy' tab and select 'Open Browser'
+# Within Browser, navigate until you are right before the request you want to modify
+# within Burp, toggle intercept on, then go back to the browser and initiate the request
+# Each request will be paused and the parameters displayed in burp. You can modify the params then click forward to proceed
+
+#rails - update just specific gem
+bundle update --source <GEM Name>
+
+#Running SpringBoot apps from the command line - from the repo
+./mvnw package
+#Option 1
+java -jar target/<jarfile created in target directory>
+ex. java -jar target/demo-0.0.1-SNAPSHOT.jar
+#Option 2
+./mvnw spring-boot:run
+
+#Configuring RB repo to read packages (maybe not perfect)
+Open 'Run' -> 'Edit Configurations'
+Under 'Gradle' create a new config if it doesn't exist for application
+Add to ENV variables: GITHUB_PACKAGE_TOKEN={insert token}
+#Or just
+export GITHUB_PACKAGE_TOKEN={token}
+check with 'printenv'
+
+#Updateing ZSHRC to det default directories
+#Open the file via: 
+vim ~/.zshrc
+#Add whatever variables you want to set. Example to set a custom variables:
+export JAVA_HOME=`/usr/libexec/java_home -v 17.0.9.0-m1`
+export GITHUB_PACKAGE_TOKEN=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
+# refresh the system variables
+source .zshrc
+# check and confirm system variable is now set
+printenv
+
+#When joining a new project with a new github, be sure to set the global configs via
+git config --global user.name "John Doe"
+git config --global user.email johndoe@example.com #this will be the githubs account email
+#Look at exisiting commits to determine exact formating of of username
+
+#Setting up SSH to a new GitHub account
+#General Instructions are here: https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+#In step 2 you will have to rename the key to be generated to something custom
+#In step 2 when updating ~/.ssh/config, you will probably need to add a whole extra entry like described here: https://gist.github.com/jexchan/2351996
+#It is also possible the best case is to remove/delete the key entirly and generate a new one
+#Once created add the key to your github account following: https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account
+#NOTE: if you set a custom name for your key than the command in step 2 should be: pbcopy < ~/.ssh/<cutome_name>.pub
+#You can then test with: https://docs.github.com/en/authentication/connecting-to-github-with-ssh/testing-your-ssh-connection
+
+
+#Running order service locally
+# First run a 'docker ps' which should yeild 'Cannot connect to the Docker daemon at unix:///Users/walterporzel/.colima/default/docker.sock. Is the docker daemon running?'
+#Assuming that colima is not running 
+colima start
+#You can then run another docker PS - NOTE: You may see the postgres container running but thats it and it wont cause any issues with the next command
+docker-compose up -d 
+#navigate to: Elephant on righthand side (gradle) -> order->tasks->application->modify run configurations... and add env variable:
+SPRING_PROFILES_ACTIVE=local
+#Then run the application from the boot run or the top menu Or
+SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
+#Once your done stop all the containers with:
+docker-compose down
+#Also clear Database:
+docker-compose down --volumes
+
+#See local kafka queue
+kcat -C -b localhost:9092 -t integration.capability-order -s value=avro -r http://localhost:8081
+#See from last offset
+kcat -C -b localhost:9092 -t -o-1 integration.capability-order -s value=avro -r http://localhost:8081
+
+#Launch shell to see DB config 
+docker-compose exec -it db bash
+psql -U postgres sample
+#Show all tables
+\d
+#Generate date for migration
+date -u "+%Y%m%d%H%M%S"
+
+#Ignore synk vulnerability
+snyk ignore --id='SNYK-JAVA-IOPROJECTREACTORNETTY-6057720'
+
+#get customer ID from email
+http https://api.dev.marketplace.ritchiebros.com/account/v1/customers channel_customer_id==paultest45@mailinator.com channel==RBA | jq '.customers[].id'
+
+###Running commands in a curl-pods
+https://github.com/RBMarketplace/di-documentation/blob/main/doc/how-to/connect-to-eks-cluster.md
+https://ritchiebros.atlassian.net/wiki/spaces/OIC/pages/540902175/Running+Commands+With+Curl+Pod
+##From Desktop directory
+./rbctl_darwin_amd64 login -e nonprod
+#Then check if you can see pods
+kubectl -n order-invoice-cash-dev get pod
+#Command that Works
+kubectl -n order-invoice-cash-dev exec -it curl -- curl --request GET --url http://payment.crane-dev.svc.cluster.local:8080/v2/payments/2e646e16-6784-487c-89e4-c704d05f6f17 --header 'Accept: application/json, application/xml'
+
+#ITERM - diveded pane horizontally
+CMD + SHIFT + d
+#vertically
+CMD + d
+

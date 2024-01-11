@@ -47,3 +47,31 @@ kubectl get deployments
 
 #Imperative command to update image version
 kubectl set image <object_type>/<object_name> <container_name> = <new_image_to_use>
+
+#Configure the VM to use your docker server (only the current window!)
+eval $(minikube docker-env)
+
+#Apply all kubernetes configs in a directory
+kubectl apply -d <directory>
+
+#See all the different options kubernetes has for creating a persistant volume (standard is what will be used if not specified in PVC config file)
+kubectl get storageclass
+
+#Get info about persistant volumes; persistant volume claims
+kubectl get pv
+kubectl get pvc
+
+#Imperative command to create a kubernetes secret 
+kubectl create secret generic <secret_name> --from-literal key=value
+ex. kubectl create secret generic pgpassword --from-literal PGPASSWORD=12345asdf
+
+1. colima start
+2. minikube start --driver=hyperkit
+3. kubectl apply -f client-pod.yaml
+4. kubectl apply -f client-node-port.yaml
+5. <minikube ip>:31515
+
+#run the development compose file when testing
+docker-compose -f docker-compose-dev.yml up
+docker-compose -f docker-compose-dev.yml up --build
+docker-compose -f docker-compose-dev.yml down

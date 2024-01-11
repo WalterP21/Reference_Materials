@@ -80,3 +80,18 @@ EX: docker build -f Dockerfile.dev .
 
 #setup container and run with volumes (container will now auto update with code changes without needing to be restarted)
 docker run -p 3000:3000 -v /app/node_modules -v $(pwd):/app <image_id>  
+
+
+###TW Docker course
+#run an nginx container named 'myweb' with forwarding on the 80:80 port 
+docker run -p 80:80 --name myweb -d nginx
+#go into container
+docker exec -it myweb sh
+
+#stop all running containers 
+docker stop $(docker ps -a -q)
+#remove all running containers 
+docker rm $(docker ps -a -q)
+
+#make your own image from running 'myweb' container
+docker commit myweb mynginx
