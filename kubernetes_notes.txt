@@ -65,6 +65,7 @@ kubectl get pvc
 kubectl create secret generic <secret_name> --from-literal key=value
 ex. kubectl create secret generic pgpassword --from-literal PGPASSWORD=12345asdf
 
+#Process for Local kubernetes development
 1. colima start
 2. minikube start --driver=hyperkit
 3. kubectl apply -f client-pod.yaml
@@ -75,3 +76,10 @@ ex. kubectl create secret generic pgpassword --from-literal PGPASSWORD=12345asdf
 docker-compose -f docker-compose-dev.yml up
 docker-compose -f docker-compose-dev.yml up --build
 docker-compose -f docker-compose-dev.yml down
+
+##Kubenetes online tutorials
+#View cluster events
+kubectl get events
+#View kubectl configuration
+kubectl config view
+#Create a service specically to expose a pod

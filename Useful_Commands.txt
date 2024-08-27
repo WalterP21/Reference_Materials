@@ -283,3 +283,41 @@ CMD + SHIFT + d
 #vertically
 CMD + d
 
+#VS code short cuts 
+SHIFT+Option+DOWN - copy current line down
+OPTION+click - adds a new courser at each click
+CMD + CTRL + SPACE - emoji picker
+
+#Troubleshood Docker builds
+Add the following command to Dockerfile to see the file structure within container
+RUN ls -R
+
+###Rename Local and Remote Branch
+#Rename local branch to the new name 
+git branch -m <old_name> <new_name>
+
+#Delete the old branch on remote
+git push origin --delete <old_name>
+OR 
+git push origin :<old_name>
+
+#Prevent git from using the old name when pushing in next step
+git branch --unset-upstream <new_name>
+
+#Push to remote 
+git push origin <new_name>
+
+#Reset the upstream branch for the new_name local branch
+git push origin -u <new_name>
+
+# To see all JIRA stories worked
+1. Navigate to 'Issues' tab in JIRA
+2. Select 'Current User' under Assignee and then order by 'Last Closed Date'
+3. Duplicate tab, Select 'More' then 'Pair' and select 'Current User'. Also remove the 'Assignee' filter and order by 'Last Closed Date'
+
+#When renaming files:
+git mv <old_path_and_name> <new_path_and_name>
+ex. git mv src/handlers/example.ts src/handlers/example_new.ts
+
+
+
